@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
 
     private String phone;
+
     private Boolean isActive;
 
 }

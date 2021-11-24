@@ -24,7 +24,11 @@ public interface InvitationRepo extends JpaRepository<Invitation, Long> {
             "WHERE subs.phone IN (?1) AND inv.invitation_status IN (?2) " +
             "ORDER BY inv.id DESC LIMIT 1", nativeQuery = true)
     Optional<Invitation> findLastByReceiverIdAndStatus(String phoneNumber, String invitationStatus);
+    List<Invitation> findByStartDateBetween(LocalDateTime then, LocalDateTime now);
 
+    Optional<Invitation> findBySenderAndReceiverAndInvitationStatus(Subscriber sender, Subscriber receiver, String status);
+    Optional<Invitation> findBySenderAndInvitationStatus(Subscriber sender, String status);
+    Optional<List<Invitation>> findAllBySenderAndInvitationStatus(Subscriber subscriber, String status);
     Optional<List<Invitation>> findAllByReceiverAndInvitationStatus(Subscriber subscriber, String status);
 
 }

@@ -24,7 +24,7 @@ public class Subscriber {
     @Column(name = "phone", nullable = false, unique = true)
     String phone;
 
-    @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "is_active", nullable = true)
     Boolean isActive;
 
     @UpdateTimestamp

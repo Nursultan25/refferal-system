@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,25 +32,52 @@ public class InvitationServiceImpl implements InvitationService {
         Subscriber receiver = checkOrCreate(invitationDto.getReceiverPhoneNumber());
 
         LocalDateTime startDate = LocalDateTime.now();
+        List<Invitation> invitationsInDay = invitationRepo.findByStartDateBetween(startDate.plusHours(24), startDate);
+        List<Invitation> invitationsInMonth = invitationRepo.findByStartDateBetween(startDate.minusDays(29), startDate);
+        if (invitationsInDay.size() > 5) {
+            throw new RuntimeException("daily limit exceeded");
+        } else if (invitationsInMonth.size() > 30) {
+            throw new RuntimeException("monthly limit exceeded");
+        }
+        /*int nonExpiredDayCounter = 0;
+        int nonExpiredMonthCounter = 0;
 
-        invitationRepo.findLast().map(invitation -> {
+        LocalDateTime startDate = LocalDateTime.now();
+
+        Invitation lastInvitation = invitationRepo.findLast().map(invitation -> {
             invitation.setEndDate(startDate.minusSeconds(1));
             return invitationRepo.save(invitation);
-        });
+        }).orElseThrow(() -> new RuntimeException("Invitation not found"));
 
-        Invitation invitation = Invitation
-                .builder()
-                .sender(sender)
-                .receiver(receiver)
-                .startDate(startDate)
-                .invitationStatus(InvitationStatus.NEW)
-                .endDate(startDate.plusYears(99))
-                .build();
+        List<Invitation> invitations = invitationRepo
+                .findAllBySenderAndInvitationStatus(lastInvitation.getSender(), InvitationStatus.NEW.toString())
+                .orElseThrow(() -> new RuntimeException("No invitations"));
 
+        for (Invitation inv:invitations) {
+            if (startDate.isBefore(inv.getStartDate().plusHours(24))) {
+                nonExpiredDayCounter++;
+            }
+            if (startDate.isBefore(inv.getStartDate().plusDays(30))) {
+                nonExpiredMonthCounter++;
+            }
+        }
 
-        invitationRepo.save(invitation);
+        if (nonExpiredDayCounter > 5) {
+            throw new RuntimeException("Invitation day limit exceeded");
+        } else if (nonExpiredMonthCounter > 30) {
+            throw new RuntimeException("Invitation month limit exceeded");
+        }*/
+            Invitation invitation = Invitation
+                    .builder()
+                    .sender(sender)
+                    .receiver(receiver)
+                    .startDate(startDate)
+                    .invitationStatus(InvitationStatus.NEW)
+                    .endDate(startDate.plusYears(99))
+                    .build();
 
-        return InvitationMapper.INSTANCE.toDto(invitation);
+            invitationRepo.save(invitation);
+            return InvitationMapper.INSTANCE.toDto(invitation);
     }
 
     private Subscriber checkOrCreate(String phoneNumber) {

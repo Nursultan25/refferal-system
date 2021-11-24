@@ -24,7 +24,7 @@ public class SubscriberServiceImpl implements SubscriberService {
         Subscriber subscriber = Subscriber
                 .builder()
                 .phone(registerRequest.getPhone())
-                .isActive(registerRequest.getIsActive())
+                .isActive(true)
                 .build();
 
         subscriberRepo.save(subscriber);
