@@ -34,6 +34,10 @@ public class InvitationServiceImpl implements InvitationService {
         LocalDateTime startDate = LocalDateTime.now();
         List<Invitation> invitationsInDay = invitationRepo.findByStartDateBetween(startDate.plusHours(24), startDate);
         List<Invitation> invitationsInMonth = invitationRepo.findByStartDateBetween(startDate.minusDays(29), startDate);
+        if ((invitationRepo.countBySenderAndReceiverAndStartDateBetween(sender, receiver, startDate.minusHours(24), startDate) >= 1)) {
+            throw new RuntimeException("Only one invitation for certain receiver per day");
+        }
+
         if (invitationsInDay.size() > 5) {
             throw new RuntimeException("daily limit exceeded");
         } else if (invitationsInMonth.size() > 30) {

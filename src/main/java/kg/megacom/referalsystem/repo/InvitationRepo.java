@@ -26,6 +26,7 @@ public interface InvitationRepo extends JpaRepository<Invitation, Long> {
     Optional<Invitation> findLastByReceiverIdAndStatus(String phoneNumber, String invitationStatus);
     List<Invitation> findByStartDateBetween(LocalDateTime then, LocalDateTime now);
 
+    int countBySenderAndReceiverAndStartDateBetween(Subscriber sender, Subscriber receiver, LocalDateTime then ,LocalDateTime now);
     Optional<Invitation> findBySenderAndReceiverAndInvitationStatus(Subscriber sender, Subscriber receiver, String status);
     Optional<Invitation> findBySenderAndInvitationStatus(Subscriber sender, String status);
     Optional<List<Invitation>> findAllBySenderAndInvitationStatus(Subscriber subscriber, String status);
